@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<gpx xmlns="http://www.topografix.com/GPX/1/1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.topografix.com/GPX/1/1 http://www.topografix.com/GPX/1/1/gpx.xsd" version="1.1" creator="GDAL 1.10.1">
+  <metadata>
+    <bounds minlat="47.0217812" maxlat="47.0375685" minlon="8.7777442" maxlon="8.7896753">
+    </bounds>
+  </metadata>
+  <trk>
+    <name>Roggenstock</name>
+    <cmt>Skitourenguru übernimmt hinsichtlich der inhaltlichen Richtigkeit, Genauigkeit, Aktualität, Zuverlässigkeit und Vollständigkeit der bereitgestellten Daten keine Gewährleistung. Skitourenguru behält sich ausdrücklich vor, jederzeit Inhalte ohne Ankündigung ganz oder teilweise zu ändern, zu löschen oder zeitweise nicht zu veröffentlichen. Haftungsansprüche gegen Skitourenguru wegen Schäden materieller oder immaterieller Art, welche aus dem Zugriff oder der Nutzung bzw. Nichtnutzung der zur bereitgestellten Daten, durch Missbrauch der Verbindung oder durch technische Störungen entstanden sind, werden ausgeschlossen. © 2018, Skitourenguru., © 2018, Skitourenguru</cmt>
+    <trkseg>
+      <trkpt lat="47.0375685" lon="8.7777442">
+        <ele>1065.0</ele>
+      </trkpt>
+      <trkpt lat="47.0365736" lon="8.7781931">
+        <ele>1080.0</ele>
+      </trkpt>
+      <trkpt lat="47.0359562" lon="8.7786777">
+        <ele>1097.2</ele>
+      </trkpt>
+      <trkpt lat="47.0352138" lon="8.7790802">
+        <ele>1123.7</ele>
+      </trkpt>
+      <trkpt lat="47.034654" lon="8.7792504">
+        <ele>1130.6</ele>
+      </trkpt>
+      <trkpt lat="47.0340921" lon="8.7796048">
+        <ele>1134.7</ele>
+      </trkpt>
+      <trkpt lat="47.0337963" lon="8.7802817">
+        <ele>1137.9</ele>
+      </trkpt>
+      <trkpt lat="47.0337148" lon="8.7810954">
+        <ele>1141.9</ele>
+      </trkpt>
+      <trkpt lat="47.0334876" lon="8.7820635">
+        <ele>1157.8</ele>
+      </trkpt>
+      <trkpt lat="47.0331899" lon="8.7828981">
+        <ele>1184.3</ele>
+      </trkpt>
+      <trkpt lat="47.0326789" lon="8.7835169">
+        <ele>1216.1</ele>
+      </trkpt>
+      <trkpt lat="47.032188" lon="8.783952">
+        <ele>1253.8</ele>
+      </trkpt>
+      <trkpt lat="47.0314859" lon="8.783987">
+        <ele>1275.9</ele>
+      </trkpt>
+      <trkpt lat="47.0308755" lon="8.7838664">
+        <ele>1299.7</ele>
+      </trkpt>
+      <trkpt lat="47.0302813" lon="8.7839041">
+        <ele>1334.1</ele>
+      </trkpt>
+      <trkpt lat="47.0279678" lon="8.7847934">
+        <ele>1434.2</ele>
+      </trkpt>
+      <trkpt lat="47.0272657" lon="8.7848284">
+        <ele>1467.3</ele>
+      </trkpt>
+      <trkpt lat="47.0255935" lon="8.7847338">
+        <ele>1485.1</ele>
+      </trkpt>
+      <trkpt lat="47.0239958" lon="8.7844175">
+        <ele>1517.1</ele>
+      </trkpt>
+      <trkpt lat="47.0233929" lon="8.7844352">
+        <ele>1528.5</ele>
+      </trkpt>
+      <trkpt lat="47.0222409" lon="8.7848602">
+        <ele>1596.9</ele>
+      </trkpt>
+      <trkpt lat="47.0219305" lon="8.7852405">
+        <ele>1614.5</ele>
+      </trkpt>
+      <trkpt lat="47.0218052" lon="8.7855728">
+        <ele>1627.0</ele>
+      </trkpt>
+      <trkpt lat="47.0217812" lon="8.7860787">
+        <ele>1641.8</ele>
+      </trkpt>
+      <trkpt lat="47.0219008" lon="8.7870026">
+        <ele>1667.6</ele>
+      </trkpt>
+      <trkpt lat="47.0221923" lon="8.7878453">
+        <ele>1690.5</ele>
+      </trkpt>
+      <trkpt lat="47.0231743" lon="8.7892579">
+        <ele>1759.3</ele>
+      </trkpt>
+      <trkpt lat="47.0232908" lon="8.7896753">
+        <ele>1774.8</ele>
+      </trkpt>
+    </trkseg>
+  </trk>
+</gpx>
