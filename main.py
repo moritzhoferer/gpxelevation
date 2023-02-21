@@ -1,4 +1,4 @@
-#! /usr/bin/python3
+#! ./venv/bin/python3
 
 import requests
 import gpxpy
@@ -74,6 +74,7 @@ def add_elevation(gpx: gpxpy.gpx.GPX, mode='srtm'):
                 point.longitude,
                 point.latitude
             )
+    
     elif mode == 'polyline':
         re = requests.get(get_swisstopo_polyline_request(gpx))
         for idx, point in enumerate(gpx.walk(only_points=True)):
@@ -81,13 +82,15 @@ def add_elevation(gpx: gpxpy.gpx.GPX, mode='srtm'):
             
     else:
         raise NotImplementedError('You are calling an option that is not implemented.')
-    
+
 
 if __name__ == '__main__':
     """
     Script to add elevation data to gpx files
     """
     import sys
+    # from optparse import OptionParser
+    # opt_parser = OptionParser()
 
     # Iterate over list of gpx files
     for arg in sys.argv[1:]:
