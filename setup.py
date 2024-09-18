@@ -11,7 +11,7 @@ setup(
     ],
     entry_points={
         'console_scripts': [
-            'gpx-add-elevation=gpx_elevation.main:main',
+            'gpx-add-elevation=gpx_elevation_adder.main:main',
         ],
     },
     author='Moritz',

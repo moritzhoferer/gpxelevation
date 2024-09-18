@@ -4,90 +4,63 @@ import argparse
 import logging
 import os
 import sys
-import json
-import requests
+from typing import List, Optional
+
 import gpxpy
-import srtm as srtm_py
-from urllib.parse import urlencode
+import gpxpy.gpx
 
-# Initialize a session for HTTP requests
-session = requests.Session()
+from .elevation import add_elevation
+from .utils import setup_logging, log_exception
 
-# API Endpoints
-WGS84_TO_LV95 = 'http://geodesy.geo.admin.ch/reframe/wgs84tolv95?easting={lon:f}&northing={lat:f}&format=json'
-SWISSTOPO_ELEVATION = 'https://api3.geo.admin.ch/rest/services/height?easting={easting}&northing={northing}&sr=2056'
 
-def transform_wgs84_to_lv95(longitude, latitude, mode='api') -> dict:
-    """Transform WGS84 coordinates to LV95"""
-    if mode == 'api':
-        response = session.get(
-            WGS84_TO_LV95.format(lon=longitude, lat=latitude)
-        )
-        response.raise_for_status()
-        _dict = response.json()
-    elif mode == 'approx':
-        # Approximate transformation
-        _phi = (float(latitude) * 3600. - 169028.66) / 1e4
-        _lambda = (float(longitude) * 3600. - 26782.5) / 1e4
-        easting = 2600072.37 + 211455.93 * _lambda - 10938.51 * _lambda * _phi \
-            - 0.36 * _lambda * _phi**2 - 44.54 * _lambda**3
-        northing = 1200147.07 + 308807.95 * _phi + 3745.25 * _lambda**2 + 76.63 * _phi**2 \
-            - 194.56 * _lambda**2 * _phi + 119.79 * _phi**3
-        _dict = {'easting': easting, 'northing': northing}
-    else:
-        raise NotImplementedError('Mode not implemented.')
-    return _dict
+def process_file(input_file: str, output_file: Optional[str], mode: str, overwrite: bool) -> None:
+    """Process a single GPX file.
 
-def get_swisstopo_elevation(longitude, latitude) -> float:
-    """Get elevation from Swisstopo API"""
-    coordinates = transform_wgs84_to_lv95(longitude, latitude, mode='approx')
-    response = session.get(
-        SWISSTOPO_ELEVATION.format(
-            easting=coordinates['easting'],
-            northing=coordinates['northing']
-        )
-    )
-    response.raise_for_status()
-    return response.json()['height']
+    Args:
+        input_file (str): Path to the input GPX file.
+        output_file (Optional[str]): Path to the output GPX file.
+        mode (str): Elevation data source mode.
+        overwrite (bool): Whether to overwrite the input file.
+    """
+    logging.info(f'Processing file: {input_file}')
+    try:
+        with open(input_file, 'r') as file:
+            gpx = gpxpy.parse(file)
+    except Exception as e:
+        log_exception(e, f'Failed to read GPX file {input_file}')
+        return
 
-def add_elevation(gpx: gpxpy.gpx.GPX, mode='srtm'):
-    """Add elevation data to GPX file"""
-    # if mode == 'srtm':
-    #     elevation_data = srtm.get_data()
-    #     elevation_data.add_elevations(gpx, smooth=True)
-    if mode == 'srtm':
-        elevation_data = srtm_py.get_data()
-        elevation_data.add_elevations(gpx, smooth=True)
-    elif mode == 'swisstopo':
-        for point in gpx.walk(only_points=True):
-            point.elevation = get_swisstopo_elevation(
-                point.longitude,
-                point.latitude
-            )
-    elif mode == 'polyline':
-        coordinates = []
-        for point in gpx.walk(only_points=True):
-            _coordinates = transform_wgs84_to_lv95(point.longitude, point.latitude)
-            coordinates.append([_coordinates['easting'], _coordinates['northing']])
-        geom = {
-            "type": "LineString",
-            "coordinates": coordinates
-        }
-        params = {
-            'geom': json.dumps(geom),
-            'sr': 2056,
-            'nb_points': len(coordinates),
-            'distinct_points': 'true'
-        }
-        response = session.get('https://api3.geo.admin.ch/rest/services/profile.json', params=params)
-        response.raise_for_status()
-        profile = response.json()
-        for idx, point in enumerate(gpx.walk(only_points=True)):
-            point.elevation = profile[idx]['alts']['COMB']
-    else:
-        raise NotImplementedError('Mode not implemented.')
+    try:
+        add_elevation(gpx, mode=mode)
+        logging.info(f'Used {mode} data.')
+    except Exception as e:
+        log_exception(e, f'Failed to add elevation using {mode}')
+        if mode != 'srtm':
+            logging.info('Trying SRTM data as fallback.')
+            try:
+                add_elevation(gpx, mode='srtm')
+                logging.info('Used SRTM data.')
+            except Exception as e_srtm:
+                log_exception(e_srtm, 'Failed to add elevation using SRTM')
+                return
+        else:
+            return
 
-def main():
+    if overwrite and output_file is None:
+        output_file = input_file
+    elif output_file is None:
+        output_file = input_file
+
+    try:
+        with open(output_file, 'w') as file:
+            file.write(gpx.to_xml())
+        logging.info(f'Written updated GPX to {output_file}')
+    except Exception as e:
+        log_exception(e, f'Failed to write GPX file {output_file}')
+
+
+def main() -> None:
+    """Main function to parse arguments and process GPX files."""
     parser = argparse.ArgumentParser(
         description='Add elevation data to GPX files.'
     )
@@ -99,47 +72,29 @@ def main():
     parser.add_argument('-v', '--verbose', action='store_true', help='Increase output verbosity')
     args = parser.parse_args()
 
-    # Set up logging
-    logging.basicConfig(level=logging.DEBUG if args.verbose else logging.INFO)
+    setup_logging(args.verbose)
+
+    if args.output and len(args.input_files) > 1 and not os.path.isdir(args.output):
+        logging.error('Output must be a directory when processing multiple files.')
+        sys.exit(1)
 
     for input_file in args.input_files:
-        logging.info(f'Processing file: {input_file}')
-        with open(input_file, 'r') as file:
-            gpx = gpxpy.parse(file)
+        if not os.path.isfile(input_file):
+            logging.error(f'Input file does not exist: {input_file}')
+            continue
 
-        try:
-            add_elevation(gpx, mode=args.mode)
-            logging.info(f'Used {args.mode} data.')
-        except Exception as e:
-            logging.error(f'Failed to add elevation using {args.mode}: {e}')
-            if args.mode != 'srtm':
-                logging.info('Trying SRTM data as fallback.')
-                try:
-                    add_elevation(gpx, mode='srtm')
-                    logging.info('Used SRTM data.')
-                except Exception as e_srtm:
-                    logging.error(f'Failed to add elevation using SRTM: {e_srtm}')
-                    continue
-            else:
-                continue
-
-        # Determine output file path
         if args.overwrite:
             output_file = input_file
         elif args.output:
-            if len(args.input_files) > 1 and not os.path.isdir(args.output):
-                logging.error('Output must be a directory when processing multiple files.')
-                sys.exit(1)
             if os.path.isdir(args.output):
                 output_file = os.path.join(args.output, os.path.basename(input_file))
             else:
                 output_file = args.output
         else:
-            output_file = input_file
+            output_file = None
 
-        with open(output_file, 'w') as file:
-            file.write(gpx.to_xml())
-        logging.info(f'Written updated GPX to {output_file}')
+        process_file(input_file, output_file, args.mode, args.overwrite)
+
 
 if __name__ == '__main__':
     main()
