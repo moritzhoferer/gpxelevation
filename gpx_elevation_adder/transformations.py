@@ -5,10 +5,12 @@ import requests
 session = requests.Session()
 
 # API Endpoint
-WGS84_TO_LV95 = 'http://geodesy.geo.admin.ch/reframe/wgs84tolv95?easting={lon:f}&northing={lat:f}&format=json'
+WGS84_TO_LV95 = "http://geodesy.geo.admin.ch/reframe/wgs84tolv95?easting={lon:f}&northing={lat:f}&format=json"
 
 
-def transform_wgs84_to_lv95(longitude: float, latitude: float, mode: str = 'api') -> Dict[str, float]:
+def transform_wgs84_to_lv95(
+    longitude: float, latitude: float, mode: str = "api"
+) -> Dict[str, float]:
     """Transform WGS84 coordinates to LV95.
 
     Args:
@@ -22,16 +24,14 @@ def transform_wgs84_to_lv95(longitude: float, latitude: float, mode: str = 'api'
     Raises:
         NotImplementedError: If the mode is not implemented.
     """
-    if mode == 'api':
-        response = session.get(
-            WGS84_TO_LV95.format(lon=longitude, lat=latitude)
-        )
+    if mode == "api":
+        response = session.get(WGS84_TO_LV95.format(lon=longitude, lat=latitude))
         response.raise_for_status()
         _dict = response.json()
         # Convert 'easting' and 'northing' to float
-        _dict['easting'] = float(_dict['easting'])
-        _dict['northing'] = float(_dict['northing'])
-    elif mode == 'approx':
+        _dict["easting"] = float(_dict["easting"])
+        _dict["northing"] = float(_dict["northing"])
+    elif mode == "approx":
         # Approximate transformation
         # Source: Swiss Federal Office of Topography (swisstopo)
         # https://www.swisstopo.admin.ch/en/transformation-calculation-services
@@ -52,7 +52,7 @@ def transform_wgs84_to_lv95(longitude: float, latitude: float, mode: str = 'api'
             - 194.56 * _lambda**2 * _phi
             + 119.79 * _phi**3
         )
-        _dict = {'easting': easting, 'northing': northing}
+        _dict = {"easting": easting, "northing": northing}
     else:
-        raise NotImplementedError('Mode not implemented.')
+        raise NotImplementedError("Mode not implemented.")
     return _dict

@@ -11,7 +11,7 @@ def setup_logging(verbose: bool) -> None:
     """
     logging.basicConfig(
         level=logging.DEBUG if verbose else logging.INFO,
-        format='%(asctime)s - %(levelname)s - %(message)s'
+        format="%(asctime)s - %(levelname)s - %(message)s",
     )
 
 
