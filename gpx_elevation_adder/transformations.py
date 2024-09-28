@@ -27,9 +27,14 @@ def transform_wgs84_to_lv95(longitude: float, latitude: float, mode: str = 'api'
             WGS84_TO_LV95.format(lon=longitude, lat=latitude)
         )
         response.raise_for_status()
-        return response.json()
+        _dict = response.json()
+        # Convert 'easting' and 'northing' to float
+        _dict['easting'] = float(_dict['easting'])
+        _dict['northing'] = float(_dict['northing'])
     elif mode == 'approx':
         # Approximate transformation
+        # Source: Swiss Federal Office of Topography (swisstopo)
+        # https://www.swisstopo.admin.ch/en/transformation-calculation-services
         _phi = (latitude * 3600.0 - 169028.66) / 10000.0
         _lambda = (longitude * 3600.0 - 26782.5) / 10000.0
         easting = (
@@ -47,6 +52,7 @@ def transform_wgs84_to_lv95(longitude: float, latitude: float, mode: str = 'api'
             - 194.56 * _lambda**2 * _phi
             + 119.79 * _phi**3
         )
-        return {'easting': easting, 'northing': northing}
+        _dict = {'easting': easting, 'northing': northing}
     else:
         raise NotImplementedError('Mode not implemented.')
+    return _dict

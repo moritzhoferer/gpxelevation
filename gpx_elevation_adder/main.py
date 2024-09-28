@@ -9,8 +9,8 @@ from typing import List, Optional
 import gpxpy
 import gpxpy.gpx
 
-from .elevation import add_elevation
-from .utils import setup_logging, log_exception
+from gpx_elevation_adder.elevation import add_elevation
+from gpx_elevation_adder.utils import setup_logging, log_exception
 
 
 def process_file(input_file: str, output_file: Optional[str], mode: str, overwrite: bool) -> None:
@@ -59,7 +59,7 @@ def process_file(input_file: str, output_file: Optional[str], mode: str, overwri
         log_exception(e, f'Failed to write GPX file {output_file}')
 
 
-def main() -> None:
+def run_main() -> None:
     """Main function to parse arguments and process GPX files."""
     parser = argparse.ArgumentParser(
         description='Add elevation data to GPX files.'
@@ -97,4 +97,4 @@ def main() -> None:
 
 
 if __name__ == '__main__':
-    main()
+    run_main()

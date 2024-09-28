@@ -2,8 +2,8 @@ from typing import Optional, List, Dict
 import json
 import requests
 import gpxpy.gpx
-import srtm  # Ensure srtm.py package is installed
-from .transformations import transform_wgs84_to_lv95
+import srtm
+from gpx_elevation_adder.transformations import transform_wgs84_to_lv95
 
 # Initialize a session for HTTP requests
 session = requests.Session()
