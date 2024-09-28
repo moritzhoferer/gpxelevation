@@ -20,11 +20,11 @@ class TestElevation(unittest.TestCase):
         track.segments.append(segment)
         segment.points.append(gpxpy.gpx.GPXTrackPoint(47.3769, 8.5417))  # Zurich
 
-    @patch('gpx_elevation_adder.elevation.transform_wgs84_to_lv95')
-    @patch('gpx_elevation_adder.elevation.session.get')
+    @patch("gpx_elevation_adder.elevation.transform_wgs84_to_lv95")
+    @patch("gpx_elevation_adder.elevation.session.get")
     def test_get_swisstopo_elevation(self, mock_get, mock_transform):
-        mock_transform.return_value = {'easting': 2683200.0, 'northing': 1243300.0}
-        mock_get.return_value.json.return_value = {'height': 408.0}
+        mock_transform.return_value = {"easting": 2683200.0, "northing": 1243300.0}
+        mock_get.return_value.json.return_value = {"height": 408.0}
         mock_get.return_value.raise_for_status = lambda: None
 
         elevation = get_swisstopo_elevation(8.5417, 47.3769)
@@ -37,22 +37,20 @@ class TestElevation(unittest.TestCase):
             point = next(self.gpx.walk(only_points=True))
             self.assertIsNotNone(point.elevation)
         except Exception as e:
-            self.fail(f'add_elevation_srtm failed with exception: {e}')
+            self.fail(f"add_elevation_srtm failed with exception: {e}")
 
-    @patch('gpx_elevation_adder.elevation.get_swisstopo_elevation')
+    @patch("gpx_elevation_adder.elevation.get_swisstopo_elevation")
     def test_add_elevation_swisstopo(self, mock_get_elevation):
         mock_get_elevation.return_value = 408.0
         add_elevation_swisstopo(self.gpx)
         point = next(self.gpx.walk(only_points=True))
         self.assertEqual(point.elevation, 408.0)
 
-    @patch('gpx_elevation_adder.elevation.transform_wgs84_to_lv95')
-    @patch('gpx_elevation_adder.elevation.session.get')
+    @patch("gpx_elevation_adder.elevation.transform_wgs84_to_lv95")
+    @patch("gpx_elevation_adder.elevation.session.get")
     def test_add_elevation_polyline(self, mock_get, mock_transform):
-        mock_transform.return_value = {'easting': 2683200.0, 'northing': 1243300.0}
-        mock_get.return_value.json.return_value = [
-            {'alts': {'COMB': 408.0}}
-        ]
+        mock_transform.return_value = {"easting": 2683200.0, "northing": 1243300.0}
+        mock_get.return_value.json.return_value = [{"alts": {"COMB": 408.0}}]
         mock_get.return_value.raise_for_status = lambda: None
 
         add_elevation_polyline(self.gpx)
@@ -60,5 +58,5 @@ class TestElevation(unittest.TestCase):
         self.assertEqual(point.elevation, 408.0)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()

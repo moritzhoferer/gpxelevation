@@ -1,6 +1,8 @@
+black==24.8.0
 certifi==2022.12.7
 charset-normalizer==3.0.1
 exceptiongroup==1.2.2
+flake8==7.1.1
 gpxpy==1.5.0
 idna==3.4
 iniconfig==2.0.0

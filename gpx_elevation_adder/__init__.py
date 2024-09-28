@@ -1,1 +1,1 @@
-from .main import run_main
+from gpx_elevation_adder.main import run_main
